@@ -1,13 +1,14 @@
 Package: practice
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Heatmap
 Version: 0.1.0
-Author: Who wrote it
+Author: person("Ryan", "Thompson", role = c("aut", "cre"), email = "kt25399@utexas.edu")
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: This function creates a heatmap from rows in a data frame  
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    factoextra
+    factoextra,
+    ggplot2
+RoxygenNote: 7.1.0
