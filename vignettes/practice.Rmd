@@ -1,0 +1,21 @@
+---
+title: "optimal_cluster"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{optimal_cluster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(practice)
+
+optimal_cluster(iris[, -5])
+```

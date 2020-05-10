@@ -6,6 +6,6 @@
 \alias{practice-package}
 \title{practice: optimal_cluster}
 \description{
-This function creates an elbow plow, silhouette, and gap statistic to help determine the optimal number of clusters for a k-means cluster anaylsis
+This function creates an elbow plow, silhouette, and gap statistic. These analyses will help determine the optimal number of clusters for a k-means cluster anaylsis.
 }
 \keyword{internal}
