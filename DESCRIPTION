@@ -12,3 +12,5 @@ Imports:
     factoextra,
     ggplot2
 RoxygenNote: 7.1.0
+Suggests: 
+    testthat
