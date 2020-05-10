@@ -4,9 +4,8 @@
 \name{practice-package}
 \alias{practice}
 \alias{practice-package}
-\title{practice: What the Package Does (Title Case)}
+\title{practice: optimal_cluster}
 \description{
-More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+This function creates an elbow plow, silhouette, and gap statistic to help determine the optimal number of clusters for a k-means cluster anaylsis
 }
 \keyword{internal}

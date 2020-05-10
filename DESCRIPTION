@@ -1,16 +1,16 @@
 Package: practice
 Type: Package
-Title: Heatmap
+Title: optimal_cluster
 Version: 0.1.0
 Author: person("Ryan", "Thompson", role = c("aut", "cre"), email = "kt25399@utexas.edu")
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: This function creates a heatmap from rows in a data frame  
+Description: This function creates an elbow plow, silhouette, and gap statistic to help determine the optimal number of clusters for a k-means cluster anaylsis  
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 
     factoextra,
-    ggplot2
+    ggplot2,
+    cluster
 RoxygenNote: 7.1.0
 Suggests: 
     testthat

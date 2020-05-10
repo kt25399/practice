@@ -1,14 +1,24 @@
-#' @title A heatmap function
-#' @description This function will create a heatmap for rows in a data frame
-#' @param d
-#' @param d dataframe
+#' @title optimal_cluster
+#' @description This function creates an elbow plow, silhouette,
+#' and gap statistic to help determine the optimal number of clusters
+#' for a k-means cluster anaylsis
+#' @param df
+#' @param df dataframe
 #' @keywords
 #' @export
 #' @examples
-#' heat_map(d = USArrests)
+#' optimal_cluster(df = iris[, -5])
 
-heat_map <- function(df) {
-  distance <- factoextra::get_dist(df)
-  factoextra::fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+optimal_cluster <- function(df) {
+  df <- na.omit(df)
+  df <- scale(df)
+  head(df)
+
+  p1 <- factoextra::fviz_nbclust(df, kmeans, method = "wss")
+  p2 <- factoextra::fviz_nbclust(df, kmeans, method = "silhouette")
+  set.seed(123)
+  gap_stat <- cluster::clusGap(df, FUN = kmeans, nstart = 25,
+                      K.max = 10, B = 50)
+  p3 <- factoextra::fviz_gap_stat(gap_stat)
+  return(list(p1, p2, p3))
 }
-
