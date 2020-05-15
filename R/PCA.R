@@ -12,11 +12,11 @@ PCA <- function(d, group) {
   d2 <- d[,sapply(d, is.numeric)]
   p <- prcomp(d2, scale = TRUE)
   p1 <- plot(p, type = 'l')
-  p2 <- summary(PCAe)
-  p3 <- biplot(PCAe, scale = 0)
+  p2 <- summary(p)
+  p3 <- biplot(p, scale = 0)
   d3 <- cbind(d, p$x[, 1:2])
 
-  p4 <- ggplot2::ggplot(data = d3, aes(x = PC1, y = PC2, color = group, fill = group)) +
+  p4 <- ggplot2::ggplot(data = d3, ggplot2::aes(x = PC1, y = PC2, color = group, fill = group)) +
     ggplot2::stat_ellipse(geom = "polygon", color = "black", alpha = 0.5) +
     ggplot2::geom_point(color = "black")
 

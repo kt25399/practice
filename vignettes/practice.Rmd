@@ -17,5 +17,9 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(practice)
 
-optimal_cluster(iris[, -5])
+optimal_cluster(iris)
+
+visualization(iris, n = 2:4)
+
+PCA(iris, group = iris$Species)
 ```
