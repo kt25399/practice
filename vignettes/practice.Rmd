@@ -16,6 +16,9 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(practice)
+library(tidyverse)
+library(cluster)
+library(factoextra)
 
 optimal_cluster(iris)
 
