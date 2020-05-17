@@ -18,3 +18,4 @@ plots to visualize the data
 \examples{
 PCA(d = iris, group = iris$Species)
 }
+\keyword{PCA}

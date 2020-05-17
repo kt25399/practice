@@ -17,3 +17,5 @@ for a k-means cluster anaylsis
 \examples{
 optimal_cluster(d = iris)
 }
+\keyword{cluster}
+\keyword{k-means}

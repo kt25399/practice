@@ -25,4 +25,24 @@ optimal_cluster(iris)
 visualization(iris, n = 2:4)
 
 PCA(iris, group = iris$Species)
+
+NBA <- read.csv("C:/Users/TABLET/Downloads/NBA.csv", header=TRUE, comment.char="#")
+NBA2 <- NBA %>% mutate(Rating = case_when(Rating < 80 ~ 1,
+                                    Rating >= 80 & Rating < 90 ~ 2,
+                                    Rating >= 90 ~ 3))
+NBA2 <- NBA2 %>% mutate(Rating = factor(Rating, levels = c(1, 2, 3),
+                                        labels = c("low", "medium", "high")))
+optimal_cluster(NBA2)
+visualization(NBA2, n = 1:4)
+
+PCA(NBA2, group = NBA2$Pos)
+PCA(NBA2, group = NBA2$Rating)
+
+###PCA then k-cluster
+PCANBA <- PCA(NBA2, group = NBA2$Pos)
+NBA3 <- cbind(NBA2, PCANBA[[2]][[5]])
+
+optimal_cluster(NBA3[, -4:-14])
+visualization(NBA3[, -4:-14], n = 1:4)
+
 ```

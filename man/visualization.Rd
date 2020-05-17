@@ -18,3 +18,5 @@ clusters
 \examples{
 visualization(d = iris, n = 2:4)
 }
+\keyword{cluster}
+\keyword{k-means}

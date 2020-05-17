@@ -3,7 +3,7 @@
 #' clusters
 #' @param d dataframe
 #' @param n number of clusters
-#' @keywords
+#' @keywords k-means cluster
 #' @export
 #' @examples
 #' visualization(d = iris, n = 2:4)

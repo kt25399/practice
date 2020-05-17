@@ -3,7 +3,7 @@
 #' and gap statistic to help determine the optimal number of clusters
 #' for a k-means cluster anaylsis
 #' @param d dataframe
-#' @keywords
+#' @keywords k-means cluster
 #' @export
 #' @examples
 #' optimal_cluster(d = iris)
