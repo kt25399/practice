@@ -1,8 +1,8 @@
 ---
-title: "optimal_cluster"
+title: "practice"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{optimal_cluster}
+  %\VignetteIndexEntry{practice}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,6 +19,7 @@ library(practice)
 library(tidyverse)
 library(cluster)
 library(factoextra)
+load("~/repos/practice/data/NBA.rda")
 
 optimal_cluster(iris)
 
@@ -26,7 +27,6 @@ visualization(iris, n = 2:4)
 
 PCA(iris, group = iris$Species)
 
-NBA <- read.csv("C:/Users/TABLET/Downloads/NBA.csv", header=TRUE, comment.char="#")
 NBA2 <- NBA %>% mutate(Rating = case_when(Rating < 80 ~ 1,
                                     Rating >= 80 & Rating < 90 ~ 2,
                                     Rating >= 90 ~ 3))

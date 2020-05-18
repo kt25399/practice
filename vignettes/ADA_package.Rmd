@@ -2,26 +2,31 @@
 title: "ADA-package"
 author: "Phil Queller"
 date: "5/16/2020"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{optimal_cluster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-install.packages("fpc")
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
 
 ```{r}
 
 library(tidyverse)
-
-nba <- read_csv("/Users/queller/Desktop/NBA.csv")
-
+load("~/repos/practice/data/NBA.rda")
+load("~/repos/practice/data/NBA_salary.rda")
 #lets remove the column "game"
 
-nba <- select(nba, -Game)
+nba <- select(NBA, -Game)
 
 #lets add salary stats
-salary <- read_csv("/Users/queller/Desktop/NBA_season1718_salary.csv")
+salary <- NBA_salary
 
 nba <- left_join(nba, salary, by = "Name")
 
@@ -116,9 +121,9 @@ PC1 correlates very highly with ranking. The other PCs explain some of the rest 
 ```{r}
 
 
-nba_with_loadings %>% ggplot(aes(x = PC1, y = `MIN/G`)) + geom_point() + geom_smooth()
+nba_with_loadings %>% ggplot(aes(x = PC1, y = `MIN.G`)) + geom_point() + geom_smooth()
 
-fit <- lm(`MIN/G` ~ PC1, data = nba_with_loadings)
+fit <- lm(`MIN.G` ~ PC1, data = nba_with_loadings)
 summary(fit)
 
 ```
@@ -186,8 +191,8 @@ nba_with_loadings %>%
 We can visualize and analyze how each position varies along each PCA.
 ```{r}
 
-df_with_loadings %>% ggplot(aes(x = Pos, y = PC1, color = Pos)) + geom_point() + geom_boxplot()
-fit <- lm(PC1 ~ Pos, data = df_with_loadings)
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC1, color = Pos)) + geom_point() + geom_boxplot()
+fit <- lm(PC1 ~ Pos, data = nba_with_loadings)
 summary(fit)
 
 ```
@@ -195,8 +200,8 @@ No difference among positions on PC1. Not surprising, because the best players o
 
 ```{r}
 
-df_with_loadings %>% ggplot(aes(x = Pos, y = PC2, color = Pos)) + geom_point() + geom_boxplot()
-fit <- aov(PC2 ~ Pos, data = df_with_loadings)
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC2, color = Pos)) + geom_point() + geom_boxplot()
+fit <- aov(PC2 ~ Pos, data = nba_with_loadings)
 summary(fit)
 TukeyHSD(fit)
 
@@ -205,8 +210,8 @@ Players in different positions significantly vary across PC2. A post-hoc Tukey t
 
 ```{r}
 
-df_with_loadings %>% ggplot(aes(x = Pos, y = PC3, color = Pos)) + geom_point() + geom_boxplot()
-fit <- aov(PC3 ~ Pos, data = df_with_loadings)
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC3, color = Pos)) + geom_point() + geom_boxplot()
+fit <- aov(PC3 ~ Pos, data = nba_with_loadings)
 summary(fit)
 TukeyHSD(fit)
 
