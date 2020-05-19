@@ -14,30 +14,138 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include = FALSE}
 library(practice)
 library(tidyverse)
 library(cluster)
 library(factoextra)
+```
+
+## The dataset
+Loading in the custom data sets used in these exercises. The first is a dataframe of common statistics for the top 200 players from the NBA. The second includes the salaries of these 
+
+players. 
+```{r dataframes}
 load("~/repos/practice/data/NBA.rda")
+head(NBA)
+load("~/repos/practice/data/NBA_salary.rda")
+head(NBA_salary)
+```
 
-optimal_cluster(iris)
+## The functions
+We were interested in doing two anaylses for our data set: K-means clustering and principle component analysis. Included in this package are three functions to do this. 
 
-visualization(iris, n = 2:4)
+### K-means clustering
+#### {optimal_cluster}
+The first function {optimal_cluster} uses three methods to help determine the optimal number of clusters for any given dataset. To use optimal cluster, input the dataset you want to explore.
 
-PCA(iris, group = iris$Species)
+```{r optimal_cluster showcase}
+op <- optimal_cluster(iris)
+```
 
+The object created has three visualizations. The first is the 'elbow method' in which the optimal number of clusters is determined by when the total within sum of squares stops sharply declining.
+
+```{r elbow}
+op[[1]]
+```
+
+In this case, it appears to be 3 clusters is optimal.
+
+The next graph is the silhouette method which take the peak width as the optimal number of clusters
+
+```{r silhouette}
+op[[2]]
+```
+
+In this case, it appears that 2 clusters is optimal.
+
+Finally the gap statistic, which agains show 2 clusters is optimal.
+
+```{r gap}
+op[[3]]
+```
+
+#### {visualization}
+With the information from the graphs in {optimal_cluster} you can input the numbers into {visualization} along with your data to visualize the groupings.
+
+```{r visualization showcase}
+visualization(d = iris, n = 2:3)
+```
+
+
+### Principle Component Analysis {PCA}
+The function {PCA} which outputs a variety of information, to use the function input your dataset and then a grouping variable you would like to group by. including a graph to display the amount of variation explained for each principle component, the summary of the PCA, a graph showing how each variable in the dataframe varies across PC1 and PC2 ,and finally a graph showing each data point graphed by PC1 and PC2, grouped by a user imputed variable.
+
+```{r PCA showcase}
+p <- PCA(d = iris, group = iris$Species)
+```
+
+The function outputs 4 pieces of information. The first two outputs show a graph visualizing how much variation is explained by each principle component (PC). The second shows how each variable in a dataframe varies across PC1 and PC2.
+
+```{r summary}
+p[[2]]
+```
+
+The third piece of information in a summary table, which shows the standard deviation and variance explained by each PC.
+
+```{r PCA plot}
+p[[4]]
+```
+
+Finally, the fourth piece of information shows all data points plotted on PC1 and PC2, then grouped by a user determined variable.
+
+## NBA
+Now with the NBA dataset. First salary will be added to NBA
+
+Player rating is a factor that might be interesting to group by after doing k-clustering or PCA. To reduce the number of groups rating players are grouped into high, medium, and low ratings.
+
+```{r rating factor}
 NBA2 <- NBA %>% mutate(Rating = case_when(Rating < 80 ~ 1,
                                     Rating >= 80 & Rating < 90 ~ 2,
                                     Rating >= 90 ~ 3))
 NBA2 <- NBA2 %>% mutate(Rating = factor(Rating, levels = c(1, 2, 3),
                                         labels = c("low", "medium", "high")))
-optimal_cluster(NBA2)
-visualization(NBA2, n = 1:4)
+```
 
+Now to see how many clusters is optimal for the NBA dataset
+```{r NBA optimal}
+optimal_cluster(NBA2)
+```
+
+The elbow method shows that 4 clusters is the optimal number, the silouette 3, and the gap statistic 4. So we will pass 1-4 into visualization to see the groupings.
+
+```{r NBA visualize}
+visualization(NBA2, n = 1:4)
+```
+
+To compare how clusters separate using PCA. We will see how the vaiablility of in the statistics measured fits into groups based on postiion, player rating and salary.
+
+```{r PCA}
 PCA(NBA2, group = NBA2$Pos)
 PCA(NBA2, group = NBA2$Rating)
+```
 
+Now looking at salary, there are ~50 players there is no salary data on. First tidying the data, making salary a factor, then running the PCA.
+
+```{r adding salary}
+NBA_salary2 <- NBA_salary %>% select(Name, salary)
+NBA2 <- left_join(NBA2, NBA_salary2, by = "Name")
+NBA2 <- NBA2[-4]
+NBA2 <- NBA2 %>% mutate(salary = case_when(salary < 1000000 ~ 1,
+                                    salary >= 1000000 & salary < 10000000 ~ 2,
+                                    salary >= 10000000 ~ 3))
+NBA2 <- NBA2 %>% mutate(salary = factor(salary, levels = c(1, 2, 3),
+                                        labels = c("low", "medium", "high")))
+NBA2 <- na.omit(NBA2)
+
+PCA(NBA2, group = NBA2$salary)
+```
+
+### Using all the functions
+
+It is sometimes useful to do PCA then look at clusters. Here we show using all 3 functions to group based off of PC.
+
+```{r PCA then k-cluster}
 ###PCA then k-cluster
 PCANBA <- PCA(NBA2, group = NBA2$Pos)
 NBA3 <- cbind(NBA2, PCANBA[[2]][[5]])

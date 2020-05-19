@@ -1,9 +1,9 @@
 Package: practice
 Type: Package
-Title: optimal_cluster
+Title: practice
 Version: 0.1.0
-Author: person("Ryan", "Thompson", role = c("aut", "cre"), email = "kt25399@utexas.edu")
-Description: This function creates an elbow plow, silhouette, and gap statistic. These analyses will help determine the optimal number of clusters for a k-means cluster anaylsis. 
+Author: person("Ryan", "Thompson", role = c("aut", "cre"), email = "kt25399@utexas.edu"), person("Philip", "Queller", role = c("aut", "cre"), person("Briana", "Betke", role = c("aut", "cre")))
+Description: This package aids in running K-means cluster analysis and principle component analysis on a data frame. {optimal_cluster} will help determine the optimal number of clusters in you data. {visulization} visualizes a number of clusters. Finall PCA will run and visualize a principle component analysis. The NBA and NBA_salary dataset is inculded to demonstrate these functions.
 Maintainer: Ryan Thompson <kt25399@utexas.edu>
 License: GPL-3
 Encoding: UTF-8
