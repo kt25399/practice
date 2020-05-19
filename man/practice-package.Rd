@@ -4,8 +4,8 @@
 \name{practice-package}
 \alias{practice}
 \alias{practice-package}
-\title{practice: optimal_cluster}
+\title{practice: practice}
 \description{
-This function creates an elbow plow, silhouette, and gap statistic. These analyses will help determine the optimal number of clusters for a k-means cluster anaylsis.
+This package aids in running K-means cluster analysis and principle component analysis on a data frame. {optimal_cluster} will help determine the optimal number of clusters in you data. {visulization} visualizes a number of clusters. Finall PCA will run and visualize a principle component analysis. The NBA and NBA_salary dataset is inculded to demonstrate these functions.
 }
 \keyword{internal}

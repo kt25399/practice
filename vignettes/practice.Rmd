@@ -204,7 +204,6 @@ p <- NBA_f %>%
   select(PTS:PF) %>%
   PCA(group = Rating)
 
-p[[6]]
 ```
 Now we have loadings for each principal component. How much of the variation in player stats is captured by the first component? How much is captured in the first three? We will work with the first 4 compenents, which capture 83 % of the variation. 
 
