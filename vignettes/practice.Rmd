@@ -36,8 +36,11 @@ head(NBA_salary)
 We were interested in doing two anaylses for our data set: K-means clustering and principle component analysis. Included in this package are three functions to do this. 
 
 ### K-means clustering
+
+K clustering is a method of grouping data in clusters based off of distances from a number of defined k groups. Optimizatal groupings are found by systematically setting cluster centers and minimizing overall distance from data points to centers.
+
 #### {optimal_cluster}
-The first function {optimal_cluster} uses three methods to help determine the optimal number of clusters for any given dataset. To use optimal cluster, input the dataset you want to explore.
+Because k must be supplied before running the k-cluster. The first function {optimal_cluster} uses three methods to help determine the optimal number of clusters for any given dataset. To use optimal cluster, input the dataset you want to explore.
 
 ```{r optimal_cluster showcase}
 op <- optimal_cluster(iris)
@@ -51,7 +54,7 @@ op[[1]]
 
 In this case, it appears to be 3 clusters is optimal.
 
-The next graph is the silhouette method which take the peak width as the optimal number of clusters
+The next graph is the silhouette method which determines the optimal number of clusters by determining what k has maximial silhouette width.
 
 ```{r silhouette}
 op[[2]]
@@ -59,13 +62,16 @@ op[[2]]
 
 In this case, it appears that 2 clusters is optimal.
 
-Finally the gap statistic, which agains show 2 clusters is optimal.
+Finally the gap statistic, determines optimal clustering by measureing intracluster variation.
 
 ```{r gap}
 op[[3]]
 ```
 
+The gap statistic also shows 2 clusters is optimal.
+
 #### {visualization}
+
 With the information from the graphs in {optimal_cluster} you can input the numbers into {visualization} along with your data to visualize the groupings.
 
 ```{r visualization showcase}
@@ -74,6 +80,7 @@ visualization(d = iris, n = 2:3)
 
 
 ### Principle Component Analysis {PCA}
+
 The function {PCA} which outputs a variety of information, to use the function input your dataset and then a grouping variable you would like to group by. including a graph to display the amount of variation explained for each principle component, the summary of the PCA, a graph showing how each variable in the dataframe varies across PC1 and PC2 ,and finally a graph showing each data point graphed by PC1 and PC2, grouped by a user imputed variable.
 
 ```{r PCA showcase}
