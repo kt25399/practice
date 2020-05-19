@@ -21,6 +21,6 @@ PCA <- function(d, group) {
     ggplot2::stat_ellipse(geom = "polygon", color = "black", alpha = 0.5) +
     ggplot2::geom_point(color = "black")
 
-  stuff <- list(p1, p2, p3, p4)
+  stuff <- list(p1, p2, p3, p4, p, d3)
   stuff
 }

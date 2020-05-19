@@ -23,7 +23,7 @@ library(factoextra)
 
 ## Principle Component Analysis and K Means Clustering with the Practice Package!
 
-### Intro to PCA and K means clustering (do we need to have a description of each in our tutorial? Can we just list resources we found to be useful?)
+### Intro to PCA and K means clustering
 
 ### Intro to the Practice Package
 The Practice package has two functions to assist with conducting principal component analysis and K cluster analysis when given a dataset and additional arguments:
@@ -134,45 +134,46 @@ Now with the NBA dataset. First salary will be added to NBA
 Player rating is a factor that might be interesting to group by after doing k-clustering or PCA. To reduce the number of groups rating players are grouped into high, medium, and low ratings.
 
 ```{r rating factor}
-NBA2 <- NBA %>% mutate(Rating = case_when(Rating < 80 ~ 1,
+NBA_f <- NBA %>% mutate(Rating = case_when(Rating < 80 ~ 1,
                                     Rating >= 80 & Rating < 90 ~ 2,
                                     Rating >= 90 ~ 3))
-NBA2 <- NBA2 %>% mutate(Rating = factor(Rating, levels = c(1, 2, 3),
+NBA_f <- NBA_f %>% mutate(Rating = factor(Rating, levels = c(1, 2, 3),
                                         labels = c("low", "medium", "high")))
 ```
 
 Now to see how many clusters is optimal for the NBA dataset
 ```{r NBA optimal}
-optimal_cluster(NBA2)
+optimal_cluster(NBA_f)
 ```
 
 The elbow method shows that 4 clusters is the optimal number, the silouette 3, and the gap statistic 4. So we will pass 1-4 into visualization to see the groupings.
 
 ```{r NBA visualize}
-visualization(NBA2, n = 1:4)
+visualization(NBA_f, n = 1:4)
 ```
 
 To compare how clusters separate using PCA. We will see how the vaiablility of in the statistics measured fits into groups based on postiion, player rating and salary.
 
 ```{r PCA}
-PCA(NBA2, group = NBA2$Pos)
-PCA(NBA2, group = NBA2$Rating)
+PCA(NBA_f, group = NBA_f$Pos)
+PCA(NBA_f, group = NBA_f$Rating)
 ```
 
 Now looking at salary, there are ~50 players there is no salary data on. First tidying the data, making salary a factor, then running the PCA.
 
 ```{r adding salary}
 NBA_salary2 <- NBA_salary %>% select(Name, salary)
-NBA2 <- left_join(NBA2, NBA_salary2, by = "Name")
-NBA2 <- NBA2[-4]
-NBA2 <- NBA2 %>% mutate(salary = case_when(salary < 1000000 ~ 1,
+NBA2 <- left_join(NBA[-4], NBA_salary2, by = "Name")
+NBA2 <- na.omit(NBA2)
+NBA_f <- left_join(NBA_f[-4], NBA_salary2)
+NBA_f <- NBA_f %>% mutate(salary = case_when(salary < 1000000 ~ 1,
                                     salary >= 1000000 & salary < 10000000 ~ 2,
                                     salary >= 10000000 ~ 3))
-NBA2 <- NBA2 %>% mutate(salary = factor(salary, levels = c(1, 2, 3),
+NBA_f <- NBA_f %>% mutate(salary = factor(salary, levels = c(1, 2, 3),
                                         labels = c("low", "medium", "high")))
-NBA2 <- na.omit(NBA2)
+NBA_f <- na.omit(NBA2)
 
-PCA(NBA2, group = NBA2$salary)
+PCA(NBA_f, group = NBA_f$salary)
 ```
 
 ### Using all the functions
@@ -181,10 +182,202 @@ It is sometimes useful to do PCA then look at clusters. Here we show using all 3
 
 ```{r PCA then k-cluster}
 ###PCA then k-cluster
-PCANBA <- PCA(NBA2, group = NBA2$Pos)
-NBA3 <- cbind(NBA2, PCANBA[[2]][[5]])
+PCANBA <- PCA(NBA_f, group = NBA2$Pos)
+NBA3 <- cbind(NBA_f, PCANBA[[2]][[5]])
 
 optimal_cluster(NBA3[, -4:-14])
 visualization(NBA3[, -4:-14], n = 1:4)
 
 ```
+
+
+### PCA interpretation
+
+Let's see how we can collapse the many player stats variables in the nba dataset into a few dimentions using a PCA. We can then compare the first few principical components to other variables like a player's rating, salary, and position.
+
+
+We will take our nba data frame and select the variables we want to collapse. For a PCA we want to choose the variables that describe the player's performance on the court, so will select columns PTS:PF and use the function prcomp(). 
+
+```{r}
+
+p <- NBA_f %>%
+  select(PTS:PF) %>%
+  PCA()
+
+p[[6]]
+```
+Now we have loadings for each principal component. How much of the variation in player stats is captured by the first component? How much is captured in the first three? We will work with the first 4 compenents, which capture 83 % of the variation. 
+
+
+Let's plot the PC values for each variable for the first 4 components.
+
+```{r}
+
+vars <- dimnames(p[[5]]$rotation[, c(1,2,3,4)])[[1]]
+head(vars)
+ p[[5]]$rotation[, c(1,2,3,4)] %>%
+  as_tibble %>%
+  mutate(variable = vars) %>% # adding a column called 'variable' with the name of the behavior you measured
+  gather("PC", "loading", PC1:PC4) %>%
+  ggplot(aes(x = variable, y = loading)) +
+  geom_col() +
+  theme_minimal() +
+  facet_wrap(~PC) +
+  coord_flip() +
+  ggtitle("The loadings of each variable for the first 4 PCs")
+
+```
+What do you notice about how the different variables load into each principal component? Which variables come out strongest in each component? Each position in basketball fulfills slightly different roles. Centers are tall and stay close to the basket. Point guards are fast lead plays. Which principipal component might you expect point guards to load highly on? And which one would centers load highly on?
+
+
+It seems that PC1 separates the best players from the rest. Players that load highly on PC1 are are good stealing the ball, rebounding, scoring points, assists, and makinng free throws. Aside from high turnovers, players on PC1 don't have any significant trade-offs in performance. Lets look at PC2. Players that score highly on PC2 make few rebounds, few personal fouls, few offensive rebounds, and few blocks, but the make a lot of 3 point shots. Players that score highly on PC3 steal the ball a lot, make higher turnovers, and have many assists, but have few blocks and 3 point shots. Fianlly, players high on PC4 rarely steal the ball, commit personal fouls, and make and attempt few 3 point shots but make a lot of free throws. Let's see if PC1 actually capatures the best players. If it does, it should correlate with Ranking and/or salary. We can use PCA here to test if the NBA's valuation of the players (Rating, salary, minutes played per game) matches with their in-game performance. 
+
+
+We'll first add the PCs to our nba dataframe
+
+```{r}
+
+nba_with_loadings <- cbind(NBA2[1:4], p[[6]])
+nba_with_loadings <- cbind(nba_with_loadings, NBA2[17])
+```
+Now lets see if the PCs correlate with Ranking to see how much each contributes to overall skill.
+```{r}
+
+nba_with_loadings %>% ggplot(aes(x = PC1, y = Rating)) + geom_point() + geom_smooth()
+
+fit <- lm(Rating ~ PC1, data = nba_with_loadings)
+summary(fit)
+
+
+nba_with_loadings %>% ggplot(aes(x = PC2, y = Rating)) + geom_point() + geom_smooth()
+
+fit <- lm(Rating ~ PC2, data = nba_with_loadings)
+summary(fit)
+
+
+nba_with_loadings %>% ggplot(aes(x = PC3, y = Rating)) + geom_point() + geom_smooth()
+
+fit <- lm(Rating ~ PC3, data = nba_with_loadings)
+summary(fit)
+
+
+nba_with_loadings %>% ggplot(aes(x = PC4, y = Rating)) + geom_point() + geom_smooth()
+
+fit <- lm(Rating ~ PC4, data = nba_with_loadings)
+summary(fit)
+
+
+```
+PC1 correlates very highly with ranking. The other PCs explain some of the rest of the variation in Ranking but only to a small degree. Lets see if PC1 correlates with other metrics of how much players are valued (salary, minutes per game).
+
+```{r}
+
+
+nba_with_loadings %>% ggplot(aes(x = PC1, y = `MIN.G`)) + geom_point() + geom_smooth()
+
+fit <- lm(`MIN.G` ~ PC1, data = nba_with_loadings)
+summary(fit)
+
+```
+PC1 predicts minutes per game. How about salary?
+
+```{r}
+
+nba_with_loadings %>% ggplot(aes(x = PC1, y = salary)) + geom_point() + geom_smooth()
+
+fit <- lm(salary ~ PC1, data = nba_with_loadings)
+summary(fit)
+
+```
+
+
+We can also use a PCA to identify how categorical variables differ in multidementional space. Each position is slightly different than the others, with center and point guard likely the biggest difference. Can we use the pca data too see how players of each position vary?
+
+
+We'll use our nba dataframe with our 4 PCs to calculate means for each PC for each position. 
+```{r}
+
+ df_summ <- nba_with_loadings %>%
+  group_by(Pos) %>%
+  summarise(pca1_avg = mean(PC1), pca2_avg = mean(PC2), pca3_avg = mean(PC3), pca4_avg = mean(PC4))
+
+```
+
+Now we can visualize how different positions vary across components. What does the plot below suggest?
+```{r}
+
+nba_with_loadings %>%
+  ggplot(aes(x = PC1, y = PC2, color = Pos)) +
+  geom_point(data = df_summ, aes(x = pca1_avg, y = pca2_avg, color = Pos), size = 5) +
+  theme_minimal() +
+  stat_ellipse() +
+  ggtitle("Plot of PCA 1 vs. 2 loadings for NBA players ",
+          subtitle = "Large points are the centroids for each position") 
+
+```
+It seems that PC1 and PC2 don't separeate players very well based on the position they play. We can see that the center position scores low on PC2, which (by our plots above) suggests they make and attempt few free throws and make many blocks and rebounds. The lack of separation across PC1 isn't too surprising given that PC1 seems to capture the best players (which may be found in any position). The other PCs involve trade-offs among variables and are more likely to separate by position. Lets see.
+
+```{r}
+
+nba_with_loadings %>%
+  ggplot(aes(x = PC2, y = PC3, color = Pos)) +
+  geom_point(data = df_summ, aes(x = pca2_avg, y = pca3_avg, color = Pos), size = 5) +
+  theme_minimal() +
+  stat_ellipse() +
+  ggtitle("Plot of PCA 2 vs. 3 loadings for NBA players ",
+          subtitle = "Large points are the centroids for each position") 
+
+```
+Here we can see better separation, again with centers separating from other positions the most. The ellipses show 95% confidence intervals for each centroid. Centersnscore low on PC2 and PC3, which indicates they make few assists and steals but make a lot of blocks and rebounds relative to other positions. Point guards score high on PC2 and 3, which suggests they take and make a lot 3 point shots, assists, and steals, but few blocks and rebounds.  Lets look at PC3 and PC4.
+
+```{r}
+
+nba_with_loadings %>%
+  ggplot(aes(x = PC3, y = PC4, color = Pos)) +
+  geom_point(data = df_summ, aes(x = pca3_avg, y = pca4_avg, color = Pos), size = 5) +
+  theme_minimal() +
+  stat_ellipse() +
+  ggtitle("Plot of PCA 1 vs. 3 loadings for NBA players ",
+          subtitle = "Large points are the centroids for each position") 
+```
+We can visualize and analyze how each position varies along each PCA.
+```{r}
+
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC1, color = Pos)) + geom_point() + geom_boxplot()
+fit <- lm(PC1 ~ Pos, data = nba_with_loadings)
+summary(fit)
+
+```
+No difference among positions on PC1. Not surprising, because the best players of each position are skilled across the board. How about the other PCs?
+
+```{r}
+
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC2, color = Pos)) + geom_point() + geom_boxplot()
+fit <- aov(PC2 ~ Pos, data = nba_with_loadings)
+summary(fit)
+TukeyHSD(fit)
+
+```
+Players in different positions significantly vary across PC2. A post-hoc Tukey test shows this is largely driven by differences betweeen centers and other positions. Players who score highly on PC2 make many and attempt many 3 pointers and assists but have few blocks and rebounds. So we can see here the center position is assoociated with few three pointers and many blocks and rebounds while the other positions make few blocks and rebounds but take moree 3 pointers. Total points loads strongly on PC1 but not on any other. PC2 shows how players in different positions play differently but still make the same number of points (PC1 scores). (Centers score lots of points after rebounds). Lets look at PC3.
+
+```{r}
+
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC3, color = Pos)) + geom_point() + geom_boxplot()
+fit <- aov(PC3 ~ Pos, data = nba_with_loadings)
+summary(fit)
+TukeyHSD(fit)
+
+```
+Players in different positions also vary across PC3, with the pattern largely driven by point guards varying with other positions. Players who score high on PC3 have relatively high steals and assists and low blocks and 3 pointers. And finally PC4:
+
+```{r}
+
+nba_with_loadings %>% ggplot(aes(x = Pos, y = PC4, color = Pos)) + geom_point() + geom_boxplot()
+fit <- aov(PC4 ~ Pos, data = nba_with_loadings)
+summary(fit)
+
+```
+No difference among positions in PC4. 
+
+
+
