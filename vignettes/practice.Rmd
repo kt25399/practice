@@ -23,18 +23,15 @@ library(factoextra)
 
 ## Principle Component Analysis and K Means Clustering with the Practice Package!
 
-### Intro to PCA and K means clustering
+## Intro to the Practice Package
+We were interested in doing two anaylses for a given data set: K-means clustering and principle component analysis. The Practice package has three functions to assist with conducting principal component analysis and K cluster analysis when given a dataset and additional arguments:
 
-### Intro to the Practice Package
-The Practice package has two functions to assist with conducting principal component analysis and K cluster analysis when given a dataset and additional arguments:
-
-- PCA() - this is a funtion that runs a pricipal component analysis and creates a visualization when provided the dataset and group name. 
+- PCA() - this is a function that runs a pricipal component analysis and creates a visualization when provided the dataset and group name. 
 - optimal_cluster() - the optimal cluster fuction conducts K means cluster analysis with three difference methods (elbow plot, wss, and silhouette) with visualizations to find the optimal number of clusters. 
 - visualization()- the visualization function conducts K means cluster analysis and visualizes it with a user inputed number of clusters based off finding from the optimal_cluster function.
 
-## The dataset
-### The Data
-The dataset provided with this package is an NBA dataset from (name of where the dataset came from) which contains the following attributes for each player during the 2017 - 2018 season:
+## The Dataset
+The dataset provided with this package is an NBA dataset which contains the following attributes for each player during the 2017 - 2018 season:
 
 - Position
 - Rating
@@ -59,8 +56,11 @@ load("~/repos/practice/data/NBA_salary.rda")
 head(NBA_salary)
 ```
 
-## The functions
-We were interested in doing two anaylses for our data set: K-means clustering and principle component analysis. Included in this package are three functions to do this. 
+## Practicing K-means clustering and PCA with the Practice package!
+
+### Example 1: The iris dataset
+
+Is it a tutorial without the iris dataset?  
 
 ### K-means clustering
 
@@ -128,7 +128,7 @@ p[[4]]
 
 Finally, the fourth piece of information shows all data points plotted on PC1 and PC2, then grouped by a user determined variable.
 
-## NBA
+## Example 2: The NBA dataset
 Now with the NBA dataset. First salary will be added to NBA
 
 Player rating is a factor that might be interesting to group by after doing k-clustering or PCA. To reduce the number of groups rating players are grouped into high, medium, and low ratings.
@@ -202,8 +202,9 @@ We will take our nba data frame and select the variables we want to collapse. Fo
 
 p <- NBA_f %>%
   select(PTS:PF) %>%
-  PCA(group = NBA_f$Rating)
+  PCA(group = Rating)
 
+p[[6]]
 ```
 Now we have loadings for each principal component. How much of the variation in player stats is captured by the first component? How much is captured in the first three? We will work with the first 4 compenents, which capture 83 % of the variation. 
 
