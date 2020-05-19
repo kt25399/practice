@@ -21,10 +21,37 @@ library(cluster)
 library(factoextra)
 ```
 
-## The dataset
-Loading in the custom data sets used in these exercises. The first is a dataframe of common statistics for the top 200 players from the NBA. The second includes the salaries of these 
+## Principle Component Analysis and K Means Clustering with the Practice Package!
 
-players. 
+### Intro to PCA and K means clustering (do we need to have a description of each in our tutorial? Can we just list resources we found to be useful?)
+
+### Intro to the Practice Package
+The Practice package has two functions to assist with conducting principal component analysis and K cluster analysis when given a dataset and additional arguments:
+
+- PCA() - this is a funtion that runs a pricipal component analysis and creates a visualization when provided the dataset and group name. 
+- optimal_cluster() - the optimal cluster fuction conducts K means cluster analysis with three difference methods (elbow plot, wss, and silhouette) with visualizations to find the optimal number of clusters. 
+- visualization()- the visualization function conducts K means cluster analysis and visualizes it with a user inputed number of clusters based off finding from the optimal_cluster function.
+
+## The dataset
+### The Data
+The dataset provided with this package is an NBA dataset from (name of where the dataset came from) which contains the following attributes for each player during the 2017 - 2018 season:
+
+- Position
+- Rating
+- Minutes per game
+- Points
+- Assists
+- Rebounds
+- Steals
+- Blocks
+- Turnovers
+- Offensive rebounds
+- Three point field goals made
+- Free throws attempted
+- Personal fouls
+
+This dataset is combined with another dataset containing the corresposing salaries for each player. 
+
 ```{r dataframes}
 load("~/repos/practice/data/NBA.rda")
 head(NBA)
