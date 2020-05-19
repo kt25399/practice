@@ -202,7 +202,7 @@ We will take our nba data frame and select the variables we want to collapse. Fo
 
 p <- NBA_f %>%
   select(PTS:PF) %>%
-  PCA()
+  PCA(group = Rating)
 
 p[[6]]
 ```
